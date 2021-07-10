@@ -29,9 +29,13 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.cbSupportedChips = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.btnConnect = new System.Windows.Forms.Button();
+            this.cbPort = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -39,8 +43,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lblChipMemSize = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -49,16 +53,17 @@
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // comboBox1
+            // cbSupportedChips
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
+            this.cbSupportedChips.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbSupportedChips.FormattingEnabled = true;
+            this.cbSupportedChips.Items.AddRange(new object[] {
             "TMS 27C0A10-12"});
-            this.comboBox1.Location = new System.Drawing.Point(107, 18);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(190, 21);
-            this.comboBox1.TabIndex = 0;
+            this.cbSupportedChips.Location = new System.Drawing.Point(107, 18);
+            this.cbSupportedChips.Name = "cbSupportedChips";
+            this.cbSupportedChips.Size = new System.Drawing.Size(190, 21);
+            this.cbSupportedChips.TabIndex = 0;
+            this.cbSupportedChips.SelectedIndexChanged += new System.EventHandler(this.cbSupportedChips_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -71,6 +76,10 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.btnConnect);
+            this.groupBox1.Controls.Add(this.cbPort);
+            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.textBox1);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label3);
@@ -84,6 +93,44 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Programmer";
             // 
+            // button1
+            // 
+            this.button1.Image = global::EpromProgrammer.Properties.Resources.refresh_small;
+            this.button1.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.button1.Location = new System.Drawing.Point(184, 15);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(25, 24);
+            this.button1.TabIndex = 0;
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btnConnect
+            // 
+            this.btnConnect.Location = new System.Drawing.Point(63, 47);
+            this.btnConnect.Name = "btnConnect";
+            this.btnConnect.Size = new System.Drawing.Size(75, 23);
+            this.btnConnect.TabIndex = 7;
+            this.btnConnect.Text = "Connect";
+            this.btnConnect.UseVisualStyleBackColor = true;
+            // 
+            // cbPort
+            // 
+            this.cbPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbPort.FormattingEnabled = true;
+            this.cbPort.Location = new System.Drawing.Point(99, 17);
+            this.cbPort.Name = "cbPort";
+            this.cbPort.Size = new System.Drawing.Size(78, 21);
+            this.cbPort.TabIndex = 6;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(15, 20);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(67, 13);
+            this.label8.TabIndex = 5;
+            this.label8.Text = "Choose port:";
+            // 
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(18, 81);
@@ -95,7 +142,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(111, 39);
+            this.label5.Location = new System.Drawing.Point(376, 39);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(19, 13);
             this.label5.TabIndex = 3;
@@ -104,7 +151,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 20);
+            this.label3.Location = new System.Drawing.Point(280, 20);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(40, 13);
             this.label3.TabIndex = 3;
@@ -113,7 +160,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(15, 57);
+            this.label6.Location = new System.Drawing.Point(280, 57);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(42, 13);
             this.label6.TabIndex = 3;
@@ -122,7 +169,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 39);
+            this.label4.Location = new System.Drawing.Point(280, 39);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(89, 13);
             this.label4.TabIndex = 3;
@@ -131,7 +178,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(111, 20);
+            this.label2.Location = new System.Drawing.Point(376, 20);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(73, 13);
             this.label2.TabIndex = 3;
@@ -139,16 +186,25 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.label8);
+            this.groupBox2.Controls.Add(this.lblChipMemSize);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.comboBox1);
+            this.groupBox2.Controls.Add(this.cbSupportedChips);
             this.groupBox2.Location = new System.Drawing.Point(7, 10);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(334, 115);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Chip";
+            // 
+            // lblChipMemSize
+            // 
+            this.lblChipMemSize.AutoSize = true;
+            this.lblChipMemSize.Location = new System.Drawing.Point(104, 54);
+            this.lblChipMemSize.Name = "lblChipMemSize";
+            this.lblChipMemSize.Size = new System.Drawing.Size(16, 13);
+            this.lblChipMemSize.TabIndex = 4;
+            this.lblChipMemSize.Text = "---";
             // 
             // label7
             // 
@@ -158,15 +214,6 @@
             this.label7.Size = new System.Drawing.Size(68, 13);
             this.label7.TabIndex = 4;
             this.label7.Text = "Memory size:";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(104, 54);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(16, 13);
-            this.label8.TabIndex = 4;
-            this.label8.Text = "---";
             // 
             // tabControl1
             // 
@@ -221,7 +268,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox cbSupportedChips;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label5;
@@ -232,10 +279,14 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label lblChipMemSize;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.ComboBox cbPort;
+        private System.Windows.Forms.Button button1;
     }
 }
 
