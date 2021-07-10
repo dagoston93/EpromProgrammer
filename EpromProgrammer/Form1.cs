@@ -35,6 +35,9 @@ namespace EpromProgrammer
                 cbSupportedChips.Items.Add(chip.name);
             }
 
+            //Initializes serial communication
+            SerialInit();
+
             // Find serial ports
             FindSerialPorts();
         }
@@ -43,8 +46,6 @@ namespace EpromProgrammer
         {
 
         }
-
-        
 
         /**
          * Chip type select combo box - Selection changed
@@ -60,6 +61,30 @@ namespace EpromProgrammer
         private void button1_Click(object sender, EventArgs e)
         {
             FindSerialPorts();
+            btnConnect.Enabled = false;
+        }
+
+        /**
+         * Selected port changed
+         */
+        private void cbPort_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (string.Empty != cbPort.Text)
+            {
+                btnConnect.Enabled = true;
+            }
+            else
+            {
+                btnConnect.Enabled = false;
+            }
+        }
+
+        /**
+         * Connect button clicked
+         */
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            SerialConnect();
         }
     }
 }
