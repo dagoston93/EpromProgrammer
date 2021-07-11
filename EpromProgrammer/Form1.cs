@@ -28,11 +28,11 @@ namespace EpromProgrammer
             InitializeComponent();
 
             // Add supported chips to combo box
-            cbSupportedChips.Items.Clear();
+            ClearComboBox(cbSupportedChips);
 
             foreach(Chip chip in supportedChips)
             {
-                cbSupportedChips.Items.Add(chip.name);
+                AddItemComboBox(cbSupportedChips, chip.name);
             }
 
             //Initializes serial communication
@@ -52,16 +52,16 @@ namespace EpromProgrammer
          */
         private void cbSupportedChips_SelectedIndexChanged(object sender, EventArgs e)
         {
-            lblChipMemSize.Text = supportedChips[cbSupportedChips.SelectedIndex].memorySizeKb.ToString() + " kB";
+            SetControlText(lblChipMemSize, supportedChips[cbSupportedChips.SelectedIndex].memorySizeKb.ToString() + " kB");
         }
 
         /**
          * Serial Port Refresh Button click
          */ 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnRefresh_Click(object sender, EventArgs e)
         {
             FindSerialPorts();
-            btnConnect.Enabled = false;
+            SetControlEnabled(btnConnect, false);
         }
 
         /**
@@ -71,11 +71,11 @@ namespace EpromProgrammer
         {
             if (string.Empty != cbPort.Text)
             {
-                btnConnect.Enabled = true;
+                SetControlEnabled(btnConnect, true);
             }
             else
             {
-                btnConnect.Enabled = false;
+                SetControlEnabled(btnConnect, false);
             }
         }
 
@@ -84,7 +84,33 @@ namespace EpromProgrammer
          */
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            SerialConnect();
+            if (isProgrammerConnected)
+            {
+                SerialDisconnect();
+            }
+            else
+            {
+                SerialConnect();
+            }
+        }
+
+        /**
+         * Window is closing...
+         */
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (isProgrammerConnected)
+            {
+                SerialDisconnect();
+            }
+        }
+
+        /**
+         * Read button clicked
+         */
+        private void btnRead_Click(object sender, EventArgs e)
+        {
+            SerialRequestRead(131072); // Read 128 kB
         }
     }
 }

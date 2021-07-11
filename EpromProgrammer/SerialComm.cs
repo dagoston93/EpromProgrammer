@@ -16,10 +16,11 @@ namespace EpromProgrammer
          * Define the required constants
          */
         const byte CONNECT_REQUEST = 0xDA;
+        const byte DISCONNECT_REQUEST = 0xFF;
         const byte CONNECT_ACCEPT = 0xAD;
         const byte READ_REQUEST = 0xAA;
         const byte OK = 0xDD;
-        const byte DATA_SIZE_ERROR = 0x0;
+        const byte DATA_SIZE_ERROR = 0x01;
 
         /**
          * Define the required objects and variables
@@ -44,9 +45,9 @@ namespace EpromProgrammer
          */
         public void FindSerialPorts()
         {
-            cbPort.Items.Clear();
             string[] availablePorts = SerialPort.GetPortNames();
-            cbPort.Items.AddRange(availablePorts);
+            ClearComboBox(cbPort);
+            AddRangeComboBox(cbPort, availablePorts);
         }
 
         /**
@@ -99,14 +100,81 @@ namespace EpromProgrammer
                 return;
             }
 
-            cbPort.Enabled = false;
+           
             isProgrammerConnected = true;
             Log("Connected succesfully!");
+            SetControlText(lblConnStatus, "Conencted");
+            SetControlText(btnConnect, "Disconnect");
+            SetControlEnabled(cbPort, false);
+            SetControlEnabled(btnRefresh, false);
         }
 
+        /**
+         * Disconnects from the open port
+         */
+        public void SerialDisconnect()
+        {
+            try
+            {
+                byte[] message = { DISCONNECT_REQUEST };
+                serialPort.Write(message, 0, 1);
+                byte response = (byte)serialPort.ReadByte();
+
+                if (response != OK)
+                {
+                    throw new Exception("Incorrect response from the device connected to " + serialPort.PortName + "!");
+                }
+            }
+            catch (Exception e)
+            {
+                Log("Error while disconnecting from port " + serialPort.PortName + ". " + e.Message);
+            }
+
+
+            serialPort.Close();
+            isProgrammerConnected = false;
+            Log("Disconnected from port " + serialPort.PortName + ". ");
+
+            SetControlEnabled(cbPort, true);
+            SetControlEnabled(btnRefresh, true);
+            SetControlText(btnConnect, "Connect");
+            SetControlText(lblConnStatus, "Disconnected");
+        }
+
+        /**
+         * Request reading from chip
+         */
+        public void SerialRequestRead(uint numOfBytes)
+        {
+            try
+            { 
+                byte[] message = { READ_REQUEST, 0, 0, 0, 0 };
+                message[1] = (byte)((numOfBytes >> 24) & 0xFF);
+                message[2] = (byte)((numOfBytes >> 16) & 0xFF);
+                message[3] = (byte)((numOfBytes >>  8) & 0xFF);
+                message[4] = (byte)(numOfBytes & 0xFF);
+
+                serialPort.Write(message, 0, 5);
+                byte response = (byte)serialPort.ReadByte();
+
+                if(response == DATA_SIZE_ERROR)
+                {
+                    throw new Exception("The requested data size is greater than the memory of the selected chip!");
+                }
+                else if (response != OK)
+                {
+                    throw new Exception("Incorrect response from the device connected to " + serialPort.PortName + ": "+ response.ToString() + "!");
+                }
+            }
+            catch (Exception e)
+            {
+                Log("Error while reading from port " + serialPort.PortName + ". " + e.Message);
+            }
+        }
 
         byte[] buffer = new byte[100];
         byte counter = 0;
+
         /**
          * Reads data from serial port
          */
