@@ -6,11 +6,26 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 
+
+
 namespace EpromProgrammer
 {
     public partial class Form1 : Form
     {
+        /**
+         * Define the required constants
+         */
+        const byte CONNECT_REQUEST = 0xDA;
+        const byte CONNECT_ACCEPT = 0xAD;
+        const byte READ_REQUEST = 0xAA;
+        const byte OK = 0xDD;
+        const byte DATA_SIZE_ERROR = 0x0;
+
+        /**
+         * Define the required objects and variables
+         */ 
         private SerialPort serialPort;
+        private bool isProgrammerConnected = false;
 
         /**
          * Initializes the serial port
@@ -39,9 +54,10 @@ namespace EpromProgrammer
          */
         public void SerialConnect()
         {
+            // Open the port
             try
             {
-                Log("Connecting to " + cbPort.Text);
+                Log("Connecting to " + cbPort.Text + "...");
                 serialPort.PortName = cbPort.Text;
                 serialPort.Open();
             }
@@ -58,7 +74,34 @@ namespace EpromProgrammer
                 return;
             }
 
+            // Identify device
+            try
+            {
+                byte[] message = { CONNECT_REQUEST };
+                serialPort.Write(message, 0, 1);
+                byte response = (byte)serialPort.ReadByte();
+
+                if(response != CONNECT_ACCEPT)
+                {
+                    throw new Exception("Incorrect response from the device connected to " + serialPort.PortName + "!");
+                }
+            }
+            catch (TimeoutException)
+            {
+                Log("Failed to connect " + serialPort.PortName + " due to timeout! Check if proper port is selected or reset Arduino.");
+                serialPort.Close();
+                return;
+            }
+            catch (Exception e)
+            {
+                Log("Failed to connect " + serialPort.PortName + ". " + e.Message);
+                serialPort.Close();
+                return;
+            }
+
             cbPort.Enabled = false;
+            isProgrammerConnected = true;
+            Log("Connected succesfully!");
         }
 
 

@@ -37,10 +37,10 @@
             this.cbPort = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.tbLog = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.lblFwVer = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lblConnStatus = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.lblChipMemSize = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -80,10 +80,10 @@
             this.groupBox1.Controls.Add(this.cbPort);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.tbLog);
-            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.lblFwVer);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.lblConnStatus);
             this.groupBox1.Location = new System.Drawing.Point(15, 446);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(773, 238);
@@ -144,14 +144,14 @@
             this.tbLog.Size = new System.Drawing.Size(739, 146);
             this.tbLog.TabIndex = 4;
             // 
-            // label5
+            // lblFwVer
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(376, 39);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(19, 13);
-            this.label5.TabIndex = 3;
-            this.label5.Text = " ---";
+            this.lblFwVer.AutoSize = true;
+            this.lblFwVer.Location = new System.Drawing.Point(376, 39);
+            this.lblFwVer.Name = "lblFwVer";
+            this.lblFwVer.Size = new System.Drawing.Size(19, 13);
+            this.lblFwVer.TabIndex = 3;
+            this.lblFwVer.Text = " ---";
             // 
             // label3
             // 
@@ -171,14 +171,14 @@
             this.label4.TabIndex = 3;
             this.label4.Text = "Firmware version:";
             // 
-            // label2
+            // lblConnStatus
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(376, 20);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Disconnected";
+            this.lblConnStatus.AutoSize = true;
+            this.lblConnStatus.Location = new System.Drawing.Point(376, 20);
+            this.lblConnStatus.Name = "lblConnStatus";
+            this.lblConnStatus.Size = new System.Drawing.Size(73, 13);
+            this.lblConnStatus.TabIndex = 3;
+            this.lblConnStatus.Text = "Disconnected";
             // 
             // groupBox2
             // 
@@ -267,10 +267,10 @@
         private System.Windows.Forms.ComboBox cbSupportedChips;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblFwVer;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblConnStatus;
         private System.Windows.Forms.TextBox tbLog;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label7;
