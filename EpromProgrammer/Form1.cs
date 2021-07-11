@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,11 @@ namespace EpromProgrammer
         private List<Chip> supportedChips = new List<Chip> {
             new Chip(0, "TMS 27C0A10-12", 128)
         };
+
+        /**
+         * Variable declatations
+         */
+        string selectedFolder = "";
 
         /**
          * The constructor
@@ -110,7 +116,58 @@ namespace EpromProgrammer
          */
         private void btnRead_Click(object sender, EventArgs e)
         {
-            SerialRequestRead(131072); // Read 128 kB
+            string path = selectedFolder + @"\" + tbFileNameRead.Text;
+            /**
+             * As test create an empty file
+             */ 
+            if(!File.Exists(path)){
+                try
+                {
+                    File.Create(path);
+                }
+                catch(Exception ex)
+                {
+                    MessageBoxButtons buttons = MessageBoxButtons.OK;
+                    MessageBox.Show(ex.Message, "File couldn't be created!", buttons);
+                }
+            }
+            else
+            {
+                MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                DialogResult result = MessageBox.Show(path + " already exists.\r\n Do you want to overwrite?", "File exists!", buttons);
+
+                if(result == DialogResult.Yes)
+                {
+                    MessageBox.Show("Will overwrite!");
+                }
+            }
+
+            if (isProgrammerConnected)
+            {
+                SerialRequestRead(131072); // Read 128 kB
+            }
+        }
+
+        /**
+         * Choose folder button clicked (Read)
+         */ 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
+            {
+                if (!string.IsNullOrEmpty(selectedFolder))
+                {
+                    dialog.SelectedPath = selectedFolder;
+                }
+
+                DialogResult result = dialog.ShowDialog();
+
+                if(result == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                {
+                    SetControlText(tbFolderRead, dialog.SelectedPath);
+                    selectedFolder = dialog.SelectedPath;
+                }
+            }
         }
     }
 }
