@@ -26,6 +26,20 @@ namespace EpromProgrammer
             }
         }
 
+        delegate void SetToolStripStatusLabelTextDelegate(ToolStripStatusLabel label, string text);
+        public void SetToolStripStatusLabelText(ToolStripStatusLabel label, string text)
+        {
+            if (lblFwVer.InvokeRequired)
+            {
+                SetToolStripStatusLabelTextDelegate d = new SetToolStripStatusLabelTextDelegate(SetToolStripStatusLabelText);
+                Invoke(d, new object[] { label, text });
+            }
+            else
+            {
+                label.Text = text;
+            }
+        }
+
         delegate void SetControlEnabledDelegate(Control control, bool isEnabled);
         public void SetControlEnabled(Control control, bool isEnabled)
         {

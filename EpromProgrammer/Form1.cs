@@ -116,36 +116,48 @@ namespace EpromProgrammer
          */
         private void btnRead_Click(object sender, EventArgs e)
         {
-            string path = selectedFolder + @"\" + tbFileNameRead.Text;
-            /**
-             * As test create an empty file
-             */ 
-            if(!File.Exists(path)){
+
+            FileStream fs = null;
+            Exception ex = createFile(selectedFolder, tbFileNameRead.Text, ref fs);
+            
+            if(!(ex is ExOK)){
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                MessageBox.Show(ex.Message, "File couldn't be created!", buttons);
+            }
+            
+            if(fs != null)
+            {
+                //Log("NotNull");
                 try
                 {
-                    File.Create(path);
-                }
-                catch(Exception ex)
-                {
-                    MessageBoxButtons buttons = MessageBoxButtons.OK;
-                    MessageBox.Show(ex.Message, "File couldn't be created!", buttons);
-                }
-            }
-            else
-            {
-                MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-                DialogResult result = MessageBox.Show(path + " already exists.\r\n Do you want to overwrite?", "File exists!", buttons);
+                    if(isProgrammerConnected)
+                    {
+                        uint dataSize = 131072;
 
-                if(result == DialogResult.Yes)
+                        SerialSendReadRequest(dataSize); // Read 128 kB
+                        byte data = 0;
+
+                        for(int i = 0; i< dataSize; i++)
+                        {
+                            data = (byte) serialPort.ReadByte();
+                            fs.WriteByte(data);
+                            SetToolStripStatusLabelText(lblStatusRight, "Reading byte: " + (i+1).ToString() + "/" + dataSize.ToString());
+                        }
+
+                        
+                    }
+                }
+                catch(Exception exc)
                 {
-                    MessageBox.Show("Will overwrite!");
+                    Log(exc.Message);
+                }
+                finally
+                {
+                    fs.Dispose();
                 }
             }
 
-            if (isProgrammerConnected)
-            {
-                SerialRequestRead(131072); // Read 128 kB
-            }
+            
         }
 
         /**

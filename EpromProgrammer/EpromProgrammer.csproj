@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chip.cs" />
+    <Compile Include="ExOK.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -70,6 +71,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SerialComm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WriteFile.cs">
       <SubType>Form</SubType>
     </Compile>
     <EmbeddedResource Include="Form1.resx">

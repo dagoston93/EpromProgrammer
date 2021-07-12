@@ -46,17 +46,22 @@
             this.label7 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tbFileNameRead = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.tbFolderRead = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.btnRead = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.label5 = new System.Windows.Forms.Label();
-            this.tbFileNameRead = new System.Windows.Forms.TextBox();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.lblStatusLeft = new System.Windows.Forms.ToolStripStatusLabel();
+            this.pbProgress = new System.Windows.Forms.ToolStripProgressBar();
+            this.lblStatusRight = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // cbSupportedChips
@@ -242,6 +247,13 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Read";
             // 
+            // tbFileNameRead
+            // 
+            this.tbFileNameRead.Location = new System.Drawing.Point(20, 72);
+            this.tbFileNameRead.Name = "tbFileNameRead";
+            this.tbFileNameRead.Size = new System.Drawing.Size(324, 20);
+            this.tbFileNameRead.TabIndex = 4;
+            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(350, 32);
@@ -260,6 +272,15 @@
             this.tbFolderRead.ReadOnly = true;
             this.tbFolderRead.Size = new System.Drawing.Size(324, 20);
             this.tbFolderRead.TabIndex = 2;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(17, 56);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(52, 13);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "Filename:";
             // 
             // label2
             // 
@@ -290,27 +311,46 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Program";
             // 
-            // label5
+            // statusStrip1
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(17, 56);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(52, 13);
-            this.label5.TabIndex = 1;
-            this.label5.Text = "Filename:";
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lblStatusLeft,
+            this.pbProgress,
+            this.lblStatusRight});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 722);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(800, 22);
+            this.statusStrip1.TabIndex = 5;
+            this.statusStrip1.Text = "statusStrip1";
             // 
-            // tbFileNameRead
+            // lblStatusLeft
             // 
-            this.tbFileNameRead.Location = new System.Drawing.Point(20, 72);
-            this.tbFileNameRead.Name = "tbFileNameRead";
-            this.tbFileNameRead.Size = new System.Drawing.Size(324, 20);
-            this.tbFileNameRead.TabIndex = 4;
+            this.lblStatusLeft.AutoSize = false;
+            this.lblStatusLeft.Name = "lblStatusLeft";
+            this.lblStatusLeft.Size = new System.Drawing.Size(276, 17);
+            this.lblStatusLeft.Spring = true;
+            this.lblStatusLeft.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pbProgress
+            // 
+            this.pbProgress.AutoSize = false;
+            this.pbProgress.Name = "pbProgress";
+            this.pbProgress.Size = new System.Drawing.Size(200, 16);
+            this.pbProgress.Step = 1;
+            // 
+            // lblStatusRight
+            // 
+            this.lblStatusRight.AutoSize = false;
+            this.lblStatusRight.Name = "lblStatusRight";
+            this.lblStatusRight.Size = new System.Drawing.Size(276, 17);
+            this.lblStatusRight.Spring = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 689);
+            this.ClientSize = new System.Drawing.Size(800, 744);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -327,7 +367,10 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -357,6 +400,10 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbFileNameRead;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatusLeft;
+        private System.Windows.Forms.ToolStripProgressBar pbProgress;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatusRight;
     }
 }
 

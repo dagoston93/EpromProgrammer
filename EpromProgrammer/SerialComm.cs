@@ -37,6 +37,7 @@ namespace EpromProgrammer
             serialPort.BaudRate = 500000;
             serialPort.ReadTimeout = 3000;
             serialPort.WriteTimeout = 3000;
+            //serialPort.ReadBufferSize = 131072;
             serialPort.DataReceived += new SerialDataReceivedEventHandler(ReadSerialData);
         }
 
@@ -144,7 +145,7 @@ namespace EpromProgrammer
         /**
          * Request reading from chip
          */
-        public void SerialRequestRead(uint numOfBytes)
+        public void SerialSendReadRequest(uint numOfBytes)
         {
             try
             { 
