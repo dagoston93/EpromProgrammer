@@ -38,7 +38,7 @@ namespace EpromProgrammer
             serialPort.ReadTimeout = 3000;
             serialPort.WriteTimeout = 3000;
             //serialPort.ReadBufferSize = 131072;
-            serialPort.DataReceived += new SerialDataReceivedEventHandler(ReadSerialData);
+            //serialPort.DataReceived += new SerialDataReceivedEventHandler(ReadSerialData);
         }
 
         /**
