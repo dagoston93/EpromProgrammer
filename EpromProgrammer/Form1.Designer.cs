@@ -46,6 +46,11 @@
             this.label7 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.nuBytesToRead = new System.Windows.Forms.NumericUpDown();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.tbFileNameRead = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.tbFolderRead = new System.Windows.Forms.TextBox();
@@ -57,11 +62,14 @@
             this.lblStatusLeft = new System.Windows.Forms.ToolStripStatusLabel();
             this.pbProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.lblStatusRight = new System.Windows.Forms.ToolStripStatusLabel();
+            this.nuReadStartAddress = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nuBytesToRead)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nuReadStartAddress)).BeginInit();
             this.SuspendLayout();
             // 
             // cbSupportedChips
@@ -234,6 +242,12 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.nuReadStartAddress);
+            this.tabPage1.Controls.Add(this.nuBytesToRead);
+            this.tabPage1.Controls.Add(this.checkBox1);
+            this.tabPage1.Controls.Add(this.label10);
+            this.tabPage1.Controls.Add(this.label9);
+            this.tabPage1.Controls.Add(this.label6);
             this.tabPage1.Controls.Add(this.tbFileNameRead);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.tbFolderRead);
@@ -246,6 +260,59 @@
             this.tabPage1.Size = new System.Drawing.Size(770, 281);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Read";
+            // 
+            // nuBytesToRead
+            // 
+            this.nuBytesToRead.Enabled = false;
+            this.nuBytesToRead.Location = new System.Drawing.Point(20, 113);
+            this.nuBytesToRead.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+            this.nuBytesToRead.Name = "nuBytesToRead";
+            this.nuBytesToRead.Size = new System.Drawing.Size(135, 20);
+            this.nuBytesToRead.TabIndex = 9;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Location = new System.Drawing.Point(186, 113);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(124, 17);
+            this.checkBox1.TabIndex = 8;
+            this.checkBox1.Text = "Read the whole chip";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(17, 160);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(18, 13);
+            this.label10.TabIndex = 7;
+            this.label10.Text = "0x";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(17, 134);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(111, 13);
+            this.label9.TabIndex = 7;
+            this.label9.Text = "Start memory address:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(17, 95);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(123, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Number of bytes to read:";
             // 
             // tbFileNameRead
             // 
@@ -293,7 +360,7 @@
             // 
             // btnRead
             // 
-            this.btnRead.Location = new System.Drawing.Point(20, 98);
+            this.btnRead.Location = new System.Drawing.Point(20, 194);
             this.btnRead.Name = "btnRead";
             this.btnRead.Size = new System.Drawing.Size(75, 23);
             this.btnRead.TabIndex = 0;
@@ -327,7 +394,7 @@
             // 
             this.lblStatusLeft.AutoSize = false;
             this.lblStatusLeft.Name = "lblStatusLeft";
-            this.lblStatusLeft.Size = new System.Drawing.Size(276, 17);
+            this.lblStatusLeft.Size = new System.Drawing.Size(291, 17);
             this.lblStatusLeft.Spring = true;
             this.lblStatusLeft.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -342,8 +409,22 @@
             // 
             this.lblStatusRight.AutoSize = false;
             this.lblStatusRight.Name = "lblStatusRight";
-            this.lblStatusRight.Size = new System.Drawing.Size(276, 17);
+            this.lblStatusRight.Size = new System.Drawing.Size(291, 17);
             this.lblStatusRight.Spring = true;
+            // 
+            // nuReadStartAddress
+            // 
+            this.nuReadStartAddress.Enabled = false;
+            this.nuReadStartAddress.Hexadecimal = true;
+            this.nuReadStartAddress.Location = new System.Drawing.Point(35, 158);
+            this.nuReadStartAddress.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+            this.nuReadStartAddress.Name = "nuReadStartAddress";
+            this.nuReadStartAddress.Size = new System.Drawing.Size(120, 20);
+            this.nuReadStartAddress.TabIndex = 10;
             // 
             // Form1
             // 
@@ -367,8 +448,10 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nuBytesToRead)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nuReadStartAddress)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -404,6 +487,12 @@
         private System.Windows.Forms.ToolStripStatusLabel lblStatusLeft;
         private System.Windows.Forms.ToolStripProgressBar pbProgress;
         private System.Windows.Forms.ToolStripStatusLabel lblStatusRight;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown nuBytesToRead;
+        private System.Windows.Forms.NumericUpDown nuReadStartAddress;
     }
 }
 

@@ -14,16 +14,11 @@ namespace EpromProgrammer
     public partial class Form1 : Form
     {
         /**
-         * Define the supported chips
-         */
-        private List<Chip> supportedChips = new List<Chip> {
-            new Chip(0, "TMS 27C0A10-12", 128)
-        };
-
-        /**
          * Variable declatations
          */
         string selectedFolder = "";
+        int startMemoryReadAddress = 0;
+        int numOfBytesToRead = 0;
 
         /**
          * The constructor
@@ -58,7 +53,9 @@ namespace EpromProgrammer
          */
         private void cbSupportedChips_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SetControlText(lblChipMemSize, supportedChips[cbSupportedChips.SelectedIndex].memorySizeKb.ToString() + " kB");
+            int memSizeInKb = supportedChips[cbSupportedChips.SelectedIndex].memorySizeKb;
+            int memSizeInBytes = memSizeInKb * 1024;
+            SetControlText(lblChipMemSize, memSizeInKb + " kB (" + memSizeInBytes + " bytes)");
         }
 
         /**
@@ -116,7 +113,6 @@ namespace EpromProgrammer
          */
         private void btnRead_Click(object sender, EventArgs e)
         {
-
             FileStream fs = null;
             Exception ex = createFile(selectedFolder, tbFileNameRead.Text, ref fs);
             
@@ -180,6 +176,22 @@ namespace EpromProgrammer
                     selectedFolder = dialog.SelectedPath;
                 }
             }
+        }
+
+        /**
+         * Read whole chip CheckBox checked changed
+         */ 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            bool isEnabled = true;
+
+            if (((CheckBox)sender).Checked)
+            {
+                isEnabled = false;
+            }
+
+            nuBytesToRead.Enabled = isEnabled;
+            nuReadStartAddress.Enabled = isEnabled;
         }
     }
 }
