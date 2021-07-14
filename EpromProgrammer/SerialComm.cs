@@ -10,7 +10,7 @@ using System.IO.Ports;
 
 namespace EpromProgrammer
 {
-    public partial class Form1 : Form
+    public class SerialComm
     {
         /**
          * Define the required constants
@@ -26,54 +26,57 @@ namespace EpromProgrammer
          * Define the required objects and variables
          */ 
         private SerialPort serialPort;
-        private bool isProgrammerConnected = false;
+        public bool isProgrammerConnected { private set; get; } = false;
 
         /**
-         * Initializes the serial port
-         */
-        public void SerialInit()
+         * The constructor
+         */ 
+        public SerialComm()
         {
             serialPort = new SerialPort();
+
             serialPort.BaudRate = 500000;
             serialPort.ReadTimeout = 3000;
             serialPort.WriteTimeout = 3000;
-            //serialPort.ReadBufferSize = 131072;
-            //serialPort.DataReceived += new SerialDataReceivedEventHandler(ReadSerialData);
         }
 
         /**
          * Find available serial ports
          */
-        public void FindSerialPorts()
-        {
-            string[] availablePorts = SerialPort.GetPortNames();
-            ClearComboBox(cbPort);
-            AddRangeComboBox(cbPort, availablePorts);
+        public string[] FindPorts()
+        { 
+            return SerialPort.GetPortNames();
         }
 
         /**
          * Connects to the selected port
          */
-        public void SerialConnect()
+        public Exception Connect(string portName)
         {
+            Exception retVal = new ExOK();
+
             // Open the port
             try
             {
-                Log("Connecting to " + cbPort.Text + "...");
-                serialPort.PortName = cbPort.Text;
+                serialPort.PortName = portName;
                 serialPort.Open();
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException e)
             {
-                Log("Unauthorized access exception while connecting: " + serialPort.PortName);
+                retVal = new Exception("Unauthorized access exception while connecting to " + serialPort.PortName
+                    + ".\r\n" + e.Message);
+                
                 serialPort.Close();
-                return;
             }
             catch (Exception e)
             {
-                Log("Failed to connect " + serialPort.PortName + ". " + e.Message);
+                retVal = new Exception("Failed to connect to " + serialPort.PortName + ". " + e.Message);
                 serialPort.Close();
-                return;
+            }
+
+            if(!(retVal is ExOK))
+            {
+                return retVal;
             }
 
             // Identify device
@@ -85,36 +88,36 @@ namespace EpromProgrammer
 
                 if(response != CONNECT_ACCEPT)
                 {
-                    throw new Exception("Incorrect response from the device connected to " + serialPort.PortName + "!");
+                    throw new Exception("Incorrect response from the device!");
                 }
             }
-            catch (TimeoutException)
+            catch (TimeoutException e)
             {
-                Log("Failed to connect " + serialPort.PortName + " due to timeout! Check if proper port is selected or reset Arduino.");
+                retVal = new Exception("Failed to connect " + serialPort.PortName + 
+                    " due to timeout! Check if proper port is selected or reset Arduino.\r\n" + e.Message);
                 serialPort.Close();
-                return;
             }
             catch (Exception e)
             {
-                Log("Failed to connect " + serialPort.PortName + ". " + e.Message);
+                retVal = new Exception("Failed to connect " + serialPort.PortName + ".\r\n" + e.Message);
                 serialPort.Close();
-                return;
             }
 
-           
-            isProgrammerConnected = true;
-            Log("Connected succesfully!");
-            SetControlText(lblConnStatus, "Conencted");
-            SetControlText(btnConnect, "Disconnect");
-            SetControlEnabled(cbPort, false);
-            SetControlEnabled(btnRefresh, false);
+            if((retVal is ExOK))
+            {
+                isProgrammerConnected = true;
+            }
+
+            return retVal;
         }
 
         /**
          * Disconnects from the open port
          */
-        public void SerialDisconnect()
+        public Exception Disconnect()
         {
+            Exception retVal = new ExOK();
+
             try
             {
                 byte[] message = { DISCONNECT_REQUEST };
@@ -123,30 +126,45 @@ namespace EpromProgrammer
 
                 if (response != OK)
                 {
-                    throw new Exception("Incorrect response from the device connected to " + serialPort.PortName + "!");
+                    throw new Exception("Incorrect response from the device!");
                 }
             }
             catch (Exception e)
             {
-                Log("Error while disconnecting from port " + serialPort.PortName + ". " + e.Message);
+                retVal = new Exception("Error while disconnecting from port " + serialPort.PortName + ". " + e.Message
+                    + "Restart the device before trying to connect to it again.");
             }
 
 
             serialPort.Close();
             isProgrammerConnected = false;
-            Log("Disconnected from port " + serialPort.PortName + ". ");
 
-            SetControlEnabled(cbPort, true);
-            SetControlEnabled(btnRefresh, true);
-            SetControlText(btnConnect, "Connect");
-            SetControlText(lblConnStatus, "Disconnected");
+            return retVal;
+        }
+
+        public Exception ReadByte(ref byte data)
+        {
+            Exception retVal = new ExOK();
+
+            try
+            {
+                data = (byte)serialPort.ReadByte();
+            }
+            catch (Exception ex)
+            {
+                retVal = ex;
+            }
+
+            return retVal;
         }
 
         /**
          * Request reading from chip
          */
-        public void SerialSendReadRequest(uint numOfBytes)
+        public Exception SerialSendReadRequest(uint numOfBytes)
         {
+            Exception retVal = new ExOK();
+
             try
             { 
                 byte[] message = { READ_REQUEST, 0, 0, 0, 0 };
@@ -164,22 +182,25 @@ namespace EpromProgrammer
                 }
                 else if (response != OK)
                 {
-                    throw new Exception("Incorrect response from the device connected to " + serialPort.PortName + ": "+ response.ToString() + "!");
+                    throw new Exception("Incorrect response from the device: " + response.ToString() + "!");
                 }
             }
             catch (Exception e)
             {
-                Log("Error while reading from port " + serialPort.PortName + ". " + e.Message);
+                retVal = new Exception("Error while reading from port " + serialPort.PortName + ". " + e.Message);
             }
+
+            return retVal;
         }
 
-        byte[] buffer = new byte[100];
-        byte counter = 0;
+
+        //byte[] buffer = new byte[100];
+        // byte counter = 0;
 
         /**
          * Reads data from serial port
          */
-        public void ReadSerialData(object sender, SerialDataReceivedEventArgs e)
+        /*public void ReadSerialData(object sender, SerialDataReceivedEventArgs e)
         {
             try
             {
@@ -211,6 +232,6 @@ namespace EpromProgrammer
             {
                 Log("Reading from port " + serialPort.PortName + " has failed: " + ex.Message);              
             }
-        }
+        }*/
     }
 }

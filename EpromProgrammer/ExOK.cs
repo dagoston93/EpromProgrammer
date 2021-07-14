@@ -11,6 +11,7 @@ namespace EpromProgrammer
      */ 
     class ExOK : Exception
     {
+        public ExOK(string message) : base(message) { }
         public ExOK() : base("Success!"){}
     }
 }

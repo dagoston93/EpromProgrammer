@@ -14,11 +14,16 @@ namespace EpromProgrammer
     public partial class Form1 : Form
     {
         /**
+         * Objects
+         */
+        SerialComm serialComm;
+
+        /**
          * Variable declatations
          */
         string selectedFolder = "";
-        int startMemoryReadAddress = 0;
-        int numOfBytesToRead = 0;
+        uint startMemoryReadAddress = 0;
+        uint numOfBytesToRead = 0;
 
         /**
          * The constructor
@@ -37,15 +42,22 @@ namespace EpromProgrammer
             }
 
             //Initializes serial communication
-            SerialInit();
+            serialComm = new SerialComm();
 
             // Find serial ports
-            FindSerialPorts();
+            RefreshAvailableSerialPorts();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
+        private void Form1_Load(object sender, EventArgs e) {}
 
+        /**
+         * Refresh available serial ports
+         */ 
+        private void RefreshAvailableSerialPorts()
+        {
+            string[] availablePorts = serialComm.FindPorts();
+            ClearComboBox(cbPort);
+            AddRangeComboBox(cbPort, availablePorts);
         }
 
         /**
@@ -63,7 +75,7 @@ namespace EpromProgrammer
          */ 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            FindSerialPorts();
+            RefreshAvailableSerialPorts();
             SetControlEnabled(btnConnect, false);
         }
 
@@ -87,13 +99,42 @@ namespace EpromProgrammer
          */
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            if (isProgrammerConnected)
+            if (serialComm.isProgrammerConnected)
             {
-                SerialDisconnect();
+                Exception result = serialComm.Disconnect();
+
+                if (IsSuccessful(result))
+                {
+                    Log("Disconnected from port " + cbPort.Text + ". ");
+                }
+                else
+                {
+                    Log(result.Message);
+                }
+
+                SetControlEnabled(cbPort, true);
+                SetControlEnabled(btnRefresh, true);
+                SetControlText(btnConnect, "Connect");
+                SetControlText(lblConnStatus, "Disconnected");
             }
             else
             {
-                SerialConnect();
+                Log("Connecting to " + cbPort.Text + "...");
+
+                Exception result = serialComm.Connect(cbPort.Text);
+
+                if (IsSuccessful(result))
+                {
+                    Log("Connected succesfully!");
+                    SetControlText(lblConnStatus, "Conencted");
+                    SetControlText(btnConnect, "Disconnect");
+                    SetControlEnabled(cbPort, false);
+                    SetControlEnabled(btnRefresh, false);
+                }
+                else
+                {
+                    Log(result.Message);
+                }
             }
         }
 
@@ -102,9 +143,9 @@ namespace EpromProgrammer
          */
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (isProgrammerConnected)
+            if (serialComm.isProgrammerConnected)
             {
-                SerialDisconnect();
+                serialComm.Disconnect();
             }
         }
 
@@ -114,33 +155,38 @@ namespace EpromProgrammer
         private void btnRead_Click(object sender, EventArgs e)
         {
             FileStream fs = null;
-            Exception ex = createFile(selectedFolder, tbFileNameRead.Text, ref fs);
+            Exception result = createFile(selectedFolder, tbFileNameRead.Text, ref fs);
             
-            if(!(ex is ExOK)){
+            if(!IsSuccessful(result)){
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
-                MessageBox.Show(ex.Message, "File couldn't be created!", buttons);
+                MessageBox.Show(result.Message, "File couldn't be created!", buttons);
             }
             
-            if(fs != null)
+            if(fs != null) // Refactor
             {
-                //Log("NotNull");
                 try
                 {
-                    if(isProgrammerConnected)
+                    if(serialComm.isProgrammerConnected) // TODO: Refactor this check to SerialComm
                     {
-                        uint dataSize = 131072;
+                        uint dataSize = 131072; // Read 128 kB
 
-                        SerialSendReadRequest(dataSize); // Read 128 kB
+                        Log("Reading " + dataSize + " bytes of data...");
+
+                        result = serialComm.SerialSendReadRequest(dataSize);
+                        ThrowIfFailed(result);
+
                         byte data = 0;
 
                         for(int i = 0; i< dataSize; i++)
                         {
-                            data = (byte) serialPort.ReadByte();
+                            result = serialComm.ReadByte(ref data);
+                            ThrowIfFailed(result);
+
                             fs.WriteByte(data);
                             SetToolStripStatusLabelText(lblStatusRight, "Reading byte: " + (i+1).ToString() + "/" + dataSize.ToString());
                         }
 
-                        
+                        Log("Reading " + dataSize + " bytes of data successful.");
                     }
                 }
                 catch(Exception exc)
@@ -157,8 +203,27 @@ namespace EpromProgrammer
         }
 
         /**
-         * Choose folder button clicked (Read)
+         * Determines whether the operation was successful or not
          */ 
+        private bool IsSuccessful(Exception e)
+        {
+            return (e is ExOK);
+        }
+
+        /**
+         * Throws exception further if operation was not successful
+         */
+        private void ThrowIfFailed(Exception e)
+        {
+            if(!(e is ExOK))
+            {
+                throw e;
+            }
+        }
+
+        /**
+         * Choose folder button clicked (Read)
+         */
         private void button1_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
