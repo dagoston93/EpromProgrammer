@@ -29,10 +29,10 @@ namespace EpromProgrammer
         delegate void SetToolStripStatusLabelTextDelegate(ToolStripStatusLabel label, string text);
         public void SetToolStripStatusLabelText(ToolStripStatusLabel label, string text)
         {
-            if (lblFwVer.InvokeRequired)
+            if (ssStatus.InvokeRequired)
             {
                 SetToolStripStatusLabelTextDelegate d = new SetToolStripStatusLabelTextDelegate(SetToolStripStatusLabelText);
-                Invoke(d, new object[] { label, text });
+                BeginInvoke(d, new object[] { label, text });
             }
             else
             {

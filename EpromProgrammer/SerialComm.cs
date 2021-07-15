@@ -158,6 +158,29 @@ namespace EpromProgrammer
             return retVal;
         }
 
+        /*
+        public Exception ReadByteFromProgrammer(ref byte data)
+        {
+            Exception retVal = new ExOK();
+
+            try
+            {
+                
+                if (!isProgrammerConnected)
+                {
+                    throw new Exception("Programmer is not connected!");
+                }
+
+                data = (byte)serialPort.ReadByte();
+            }
+            catch (Exception ex)
+            {
+                retVal = ex;
+            }
+
+            return retVal;
+        }*/
+
         /**
          * Request reading from chip
          */

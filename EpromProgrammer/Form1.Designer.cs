@@ -46,6 +46,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.nuReadStartAddress = new System.Windows.Forms.NumericUpDown();
             this.nuBytesToRead = new System.Windows.Forms.NumericUpDown();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -58,18 +59,17 @@
             this.label2 = new System.Windows.Forms.Label();
             this.btnRead = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.ssStatus = new System.Windows.Forms.StatusStrip();
             this.lblStatusLeft = new System.Windows.Forms.ToolStripStatusLabel();
             this.pbProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.lblStatusRight = new System.Windows.Forms.ToolStripStatusLabel();
-            this.nuReadStartAddress = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nuBytesToRead)).BeginInit();
-            this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nuReadStartAddress)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nuBytesToRead)).BeginInit();
+            this.ssStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // cbSupportedChips
@@ -261,6 +261,20 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Read";
             // 
+            // nuReadStartAddress
+            // 
+            this.nuReadStartAddress.Enabled = false;
+            this.nuReadStartAddress.Hexadecimal = true;
+            this.nuReadStartAddress.Location = new System.Drawing.Point(35, 158);
+            this.nuReadStartAddress.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+            this.nuReadStartAddress.Name = "nuReadStartAddress";
+            this.nuReadStartAddress.Size = new System.Drawing.Size(120, 20);
+            this.nuReadStartAddress.TabIndex = 10;
+            // 
             // nuBytesToRead
             // 
             this.nuBytesToRead.Enabled = false;
@@ -378,17 +392,17 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Program";
             // 
-            // statusStrip1
+            // ssStatus
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ssStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatusLeft,
             this.pbProgress,
             this.lblStatusRight});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 722);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(800, 22);
-            this.statusStrip1.TabIndex = 5;
-            this.statusStrip1.Text = "statusStrip1";
+            this.ssStatus.Location = new System.Drawing.Point(0, 722);
+            this.ssStatus.Name = "ssStatus";
+            this.ssStatus.Size = new System.Drawing.Size(800, 22);
+            this.ssStatus.TabIndex = 5;
+            this.ssStatus.Text = "statusStrip1";
             // 
             // lblStatusLeft
             // 
@@ -412,26 +426,12 @@
             this.lblStatusRight.Size = new System.Drawing.Size(291, 17);
             this.lblStatusRight.Spring = true;
             // 
-            // nuReadStartAddress
-            // 
-            this.nuReadStartAddress.Enabled = false;
-            this.nuReadStartAddress.Hexadecimal = true;
-            this.nuReadStartAddress.Location = new System.Drawing.Point(35, 158);
-            this.nuReadStartAddress.Maximum = new decimal(new int[] {
-            -1,
-            0,
-            0,
-            0});
-            this.nuReadStartAddress.Name = "nuReadStartAddress";
-            this.nuReadStartAddress.Size = new System.Drawing.Size(120, 20);
-            this.nuReadStartAddress.TabIndex = 10;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 744);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.ssStatus);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -448,10 +448,10 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nuBytesToRead)).EndInit();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nuReadStartAddress)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nuBytesToRead)).EndInit();
+            this.ssStatus.ResumeLayout(false);
+            this.ssStatus.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -483,7 +483,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbFileNameRead;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip ssStatus;
         private System.Windows.Forms.ToolStripStatusLabel lblStatusLeft;
         private System.Windows.Forms.ToolStripProgressBar pbProgress;
         private System.Windows.Forms.ToolStripStatusLabel lblStatusRight;

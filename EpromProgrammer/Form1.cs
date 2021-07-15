@@ -17,6 +17,7 @@ namespace EpromProgrammer
          * Objects
          */
         SerialComm serialComm;
+        //FileManager fileManager;
 
         /**
          * Variable declatations
@@ -46,6 +47,9 @@ namespace EpromProgrammer
 
             // Find serial ports
             RefreshAvailableSerialPorts();
+
+            //Initializes file manager
+            //fileManager = new FileManager();
         }
 
         private void Form1_Load(object sender, EventArgs e) {}
@@ -154,52 +158,61 @@ namespace EpromProgrammer
          */
         private void btnRead_Click(object sender, EventArgs e)
         {
-            FileStream fs = null;
-            Exception result = createFile(selectedFolder, tbFileNameRead.Text, ref fs);
-            
-            if(!IsSuccessful(result)){
-                MessageBoxButtons buttons = MessageBoxButtons.OK;
-                MessageBox.Show(result.Message, "File couldn't be created!", buttons);
-            }
-            
-            if(fs != null) // Refactor
+            try
             {
-                try
+                using (FileManager fileManager = new FileManager())
                 {
-                    if(serialComm.isProgrammerConnected) // TODO: Refactor this check to SerialComm
+                    Exception result = fileManager.CreateFile(selectedFolder, tbFileNameRead.Text);
+
+                    if (result is FileAlreadyExistsException)
                     {
-                        uint dataSize = 131072; // Read 128 kB
+                        MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                        DialogResult dialogResult = MessageBox.Show(result.Message + "\r\nDo you want to overwrite?", "File already exists!", buttons);
 
-                        Log("Reading " + dataSize + " bytes of data...");
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            result = fileManager.CreateFile(selectedFolder, tbFileNameRead.Text, true);
+                        }
+                        else
+                        {
+                            throw result;
+                        }
+                    }
 
-                        result = serialComm.SerialSendReadRequest(dataSize);
+                    if (!IsSuccessful(result))
+                    {
+                        MessageBoxButtons buttons = MessageBoxButtons.OK;
+                        MessageBox.Show(result.Message, "File couldn't be created!", buttons);
+                        throw result;
+                    }
+
+                    uint dataSize = 131072; // Read 128 kB
+
+                    Log("Reading " + dataSize + " bytes of data...");
+
+                    result = serialComm.SerialSendReadRequest(dataSize);
+                    ThrowIfFailed(result);
+
+                    byte data = 0;
+
+                    for (int i = 0; i < dataSize; i++)
+                    {
+                        SetToolStripStatusLabelText(lblStatusRight, "Reading byte: " + (i + 1).ToString() + "/" + dataSize.ToString());
+
+                        result = serialComm.ReadByte(ref data);
                         ThrowIfFailed(result);
 
-                        byte data = 0;
-
-                        for(int i = 0; i< dataSize; i++)
-                        {
-                            result = serialComm.ReadByte(ref data);
-                            ThrowIfFailed(result);
-
-                            fs.WriteByte(data);
-                            SetToolStripStatusLabelText(lblStatusRight, "Reading byte: " + (i+1).ToString() + "/" + dataSize.ToString());
-                        }
-
-                        Log("Reading " + dataSize + " bytes of data successful.");
+                        result = fileManager.WriteByte(data);
+                        ThrowIfFailed(result);
                     }
-                }
-                catch(Exception exc)
-                {
-                    Log(exc.Message);
-                }
-                finally
-                {
-                    fs.Dispose();
-                }
-            }
 
-            
+                    Log("Reading " + dataSize + " bytes of data successful.");
+                }    
+            }
+            catch(Exception ex)
+            {
+                Log(ex.Message);
+            }
         }
 
         /**
@@ -258,5 +271,6 @@ namespace EpromProgrammer
             nuBytesToRead.Enabled = isEnabled;
             nuReadStartAddress.Enabled = isEnabled;
         }
+
     }
 }
