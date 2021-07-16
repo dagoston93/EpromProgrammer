@@ -26,6 +26,49 @@ namespace EpromProgrammer
             }
         }
 
+        delegate void SetCheckBoxCheckedDelegate(CheckBox cb, bool isChecked);
+        public void SetCheckBoxChecked(CheckBox cb, bool isChecked)
+        {
+            if (cb.InvokeRequired)
+            {
+                SetCheckBoxCheckedDelegate d = new SetCheckBoxCheckedDelegate(SetCheckBoxChecked);
+                Invoke(d, new object[] { cb, isChecked });
+            }
+            else
+            {
+                cb.Checked = isChecked;
+            }
+        }
+
+        delegate void SetNumericUpDownValueDelegate(NumericUpDown control, int value);
+        public void SetNumericUpDownValue(NumericUpDown control, int value)
+        {
+            if (control.InvokeRequired)
+            {
+                SetNumericUpDownValueDelegate d = new SetNumericUpDownValueDelegate(SetNumericUpDownValue);
+                Invoke(d, new object[] { control, value });
+            }
+            else
+            {
+                control.Value = value;
+            }
+        }
+
+        delegate void SetNumericUpDownMinMaxDelegate(NumericUpDown control, int min, int max);
+        public void SetNumericUpDownMinMax(NumericUpDown control, int min, int max)
+        {
+            if (control.InvokeRequired)
+            {
+                SetNumericUpDownMinMaxDelegate d = new SetNumericUpDownMinMaxDelegate(SetNumericUpDownMinMax);
+                Invoke(d, new object[] { control, min, max });
+            }
+            else
+            {
+                control.Minimum = min;
+                control.Maximum = max;
+            }
+        }
+
         delegate void SetToolStripStatusLabelTextDelegate(ToolStripStatusLabel label, string text);
         public void SetToolStripStatusLabelText(ToolStripStatusLabel label, string text)
         {

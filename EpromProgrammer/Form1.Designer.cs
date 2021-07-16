@@ -48,12 +48,12 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.nuReadStartAddress = new System.Windows.Forms.NumericUpDown();
             this.nuBytesToRead = new System.Windows.Forms.NumericUpDown();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.cbReadWholeChip = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.tbFileNameRead = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btn_ChooseFolder = new System.Windows.Forms.Button();
             this.tbFolderRead = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -244,12 +244,12 @@
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage1.Controls.Add(this.nuReadStartAddress);
             this.tabPage1.Controls.Add(this.nuBytesToRead);
-            this.tabPage1.Controls.Add(this.checkBox1);
+            this.tabPage1.Controls.Add(this.cbReadWholeChip);
             this.tabPage1.Controls.Add(this.label10);
             this.tabPage1.Controls.Add(this.label9);
             this.tabPage1.Controls.Add(this.label6);
             this.tabPage1.Controls.Add(this.tbFileNameRead);
-            this.tabPage1.Controls.Add(this.button1);
+            this.tabPage1.Controls.Add(this.btn_ChooseFolder);
             this.tabPage1.Controls.Add(this.tbFolderRead);
             this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.label2);
@@ -265,7 +265,7 @@
             // 
             this.nuReadStartAddress.Enabled = false;
             this.nuReadStartAddress.Hexadecimal = true;
-            this.nuReadStartAddress.Location = new System.Drawing.Point(35, 158);
+            this.nuReadStartAddress.Location = new System.Drawing.Point(35, 121);
             this.nuReadStartAddress.Maximum = new decimal(new int[] {
             -1,
             0,
@@ -278,7 +278,7 @@
             // nuBytesToRead
             // 
             this.nuBytesToRead.Enabled = false;
-            this.nuBytesToRead.Location = new System.Drawing.Point(20, 113);
+            this.nuBytesToRead.Location = new System.Drawing.Point(20, 167);
             this.nuBytesToRead.Maximum = new decimal(new int[] {
             -1,
             0,
@@ -288,23 +288,24 @@
             this.nuBytesToRead.Size = new System.Drawing.Size(135, 20);
             this.nuBytesToRead.TabIndex = 9;
             // 
-            // checkBox1
+            // cbReadWholeChip
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(186, 113);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(124, 17);
-            this.checkBox1.TabIndex = 8;
-            this.checkBox1.Text = "Read the whole chip";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.cbReadWholeChip.AutoSize = true;
+            this.cbReadWholeChip.Checked = true;
+            this.cbReadWholeChip.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbReadWholeChip.Enabled = false;
+            this.cbReadWholeChip.Location = new System.Drawing.Point(176, 122);
+            this.cbReadWholeChip.Name = "cbReadWholeChip";
+            this.cbReadWholeChip.Size = new System.Drawing.Size(124, 17);
+            this.cbReadWholeChip.TabIndex = 8;
+            this.cbReadWholeChip.Text = "Read the whole chip";
+            this.cbReadWholeChip.UseVisualStyleBackColor = true;
+            this.cbReadWholeChip.CheckedChanged += new System.EventHandler(this.cbReadWholeChip_CheckedChanged);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(17, 160);
+            this.label10.Location = new System.Drawing.Point(17, 123);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(18, 13);
             this.label10.TabIndex = 7;
@@ -313,7 +314,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(17, 134);
+            this.label9.Location = new System.Drawing.Point(17, 102);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(111, 13);
             this.label9.TabIndex = 7;
@@ -322,7 +323,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(17, 95);
+            this.label6.Location = new System.Drawing.Point(17, 149);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(123, 13);
             this.label6.TabIndex = 5;
@@ -335,15 +336,15 @@
             this.tbFileNameRead.Size = new System.Drawing.Size(324, 20);
             this.tbFileNameRead.TabIndex = 4;
             // 
-            // button1
+            // btn_ChooseFolder
             // 
-            this.button1.Location = new System.Drawing.Point(350, 32);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(31, 23);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "...";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btn_ChooseFolder.Location = new System.Drawing.Point(350, 32);
+            this.btn_ChooseFolder.Name = "btn_ChooseFolder";
+            this.btn_ChooseFolder.Size = new System.Drawing.Size(31, 23);
+            this.btn_ChooseFolder.TabIndex = 3;
+            this.btn_ChooseFolder.Text = "...";
+            this.btn_ChooseFolder.UseVisualStyleBackColor = true;
+            this.btn_ChooseFolder.Click += new System.EventHandler(this.btn_ChooseFolder_Click);
             // 
             // tbFolderRead
             // 
@@ -374,6 +375,7 @@
             // 
             // btnRead
             // 
+            this.btnRead.Enabled = false;
             this.btnRead.Location = new System.Drawing.Point(20, 194);
             this.btnRead.Name = "btnRead";
             this.btnRead.Size = new System.Drawing.Size(75, 23);
@@ -478,7 +480,7 @@
         private System.Windows.Forms.ComboBox cbPort;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button btnRead;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btn_ChooseFolder;
         private System.Windows.Forms.TextBox tbFolderRead;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbFileNameRead;
@@ -487,7 +489,7 @@
         private System.Windows.Forms.ToolStripStatusLabel lblStatusLeft;
         private System.Windows.Forms.ToolStripProgressBar pbProgress;
         private System.Windows.Forms.ToolStripStatusLabel lblStatusRight;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox cbReadWholeChip;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label6;

@@ -17,7 +17,6 @@ namespace EpromProgrammer
          * Objects
          */
         SerialComm serialComm;
-        //FileManager fileManager;
 
         /**
          * Variable declatations
@@ -48,8 +47,6 @@ namespace EpromProgrammer
             // Find serial ports
             RefreshAvailableSerialPorts();
 
-            //Initializes file manager
-            //fileManager = new FileManager();
         }
 
         private void Form1_Load(object sender, EventArgs e) {}
@@ -69,9 +66,32 @@ namespace EpromProgrammer
          */
         private void cbSupportedChips_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int memSizeInKb = supportedChips[cbSupportedChips.SelectedIndex].memorySizeKb;
-            int memSizeInBytes = memSizeInKb * 1024;
-            SetControlText(lblChipMemSize, memSizeInKb + " kB (" + memSizeInBytes + " bytes)");
+            if (string.Empty != cbSupportedChips.Text)
+            {
+                int memSizeInKb = supportedChips[cbSupportedChips.SelectedIndex].memorySizeKb;
+                int memSizeInBytes = memSizeInKb * 1024;
+                SetControlText(lblChipMemSize, memSizeInKb + " kB (" + memSizeInBytes + " bytes)");
+
+                SetControlEnabled(cbReadWholeChip, true);
+                SetControlEnabled(btnRead, true);
+                SetControlEnabled(nuReadStartAddress, false);
+                SetControlEnabled(nuBytesToRead, false);
+
+                SetCheckBoxChecked(cbReadWholeChip, true);
+
+                SetNumericUpDownValue(nuBytesToRead, memSizeInBytes);
+                SetNumericUpDownValue(nuReadStartAddress, 0);
+                SetNumericUpDownMinMax(nuBytesToRead, 1, memSizeInBytes);
+                SetNumericUpDownMinMax(nuReadStartAddress, 0, memSizeInBytes - 1);
+            }
+            else
+            {
+                SetControlEnabled(cbReadWholeChip, false);
+                SetControlEnabled(btnRead, false);
+                SetControlEnabled(nuReadStartAddress, false);
+                SetControlEnabled(nuBytesToRead, false);
+                SetControlText(lblChipMemSize, "---");
+            }
         }
 
         /**
@@ -237,7 +257,7 @@ namespace EpromProgrammer
         /**
          * Choose folder button clicked (Read)
          */
-        private void button1_Click(object sender, EventArgs e)
+        private void btn_ChooseFolder_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
@@ -259,7 +279,7 @@ namespace EpromProgrammer
         /**
          * Read whole chip CheckBox checked changed
          */ 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void cbReadWholeChip_CheckedChanged(object sender, EventArgs e)
         {
             bool isEnabled = true;
 
