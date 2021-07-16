@@ -79,10 +79,10 @@ namespace EpromProgrammer
 
                 SetCheckBoxChecked(cbReadWholeChip, true);
 
-                SetNumericUpDownValue(nuBytesToRead, memSizeInBytes);
-                SetNumericUpDownValue(nuReadStartAddress, 0);
                 SetNumericUpDownMinMax(nuBytesToRead, 1, memSizeInBytes);
                 SetNumericUpDownMinMax(nuReadStartAddress, 0, memSizeInBytes - 1);
+                SetNumericUpDownValue(nuBytesToRead, memSizeInBytes);
+                SetNumericUpDownValue(nuReadStartAddress, 0);
             }
             else
             {

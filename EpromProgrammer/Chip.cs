@@ -13,7 +13,8 @@ namespace EpromProgrammer
     public partial class Form1 : Form
     {
         private List<Chip> supportedChips = new List<Chip> {
-            new Chip(0, "TMS 27C0A10-12", 128)
+            new Chip(0, "TMS 27C0A10-12", 128),
+            new Chip(1, "Non-existing Test chip", 256)
         };
     }
 
