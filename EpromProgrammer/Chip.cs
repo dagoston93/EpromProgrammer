@@ -23,15 +23,15 @@ namespace EpromProgrammer
      */
     public struct Chip
     {
-        public Chip(int pId, string pName, int pMemorySizeKb)
+        public Chip(uint pId, string pName, uint pMemorySizeKb)
         {
             this.id = pId;
             this.name = pName;
             this.memorySizeKb = pMemorySizeKb;
         }
 
-        public int id { private set; get; }
+        public uint id { private set; get; }
         public string name { private set; get; }
-        public int memorySizeKb { private set; get; }
+        public uint memorySizeKb { private set; get; }
     }
 }

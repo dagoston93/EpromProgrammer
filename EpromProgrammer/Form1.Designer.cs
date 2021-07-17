@@ -50,6 +50,8 @@
             this.nuBytesToRead = new System.Windows.Forms.NumericUpDown();
             this.cbReadWholeChip = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
+            this.lblReadFinalMemoryAddress = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.tbFileNameRead = new System.Windows.Forms.TextBox();
@@ -197,6 +199,7 @@
             this.lblConnStatus.Size = new System.Drawing.Size(73, 13);
             this.lblConnStatus.TabIndex = 3;
             this.lblConnStatus.Text = "Disconnected";
+            this.lblConnStatus.TextChanged += new System.EventHandler(this.lblConnStatus_TextChanged);
             // 
             // groupBox2
             // 
@@ -246,6 +249,8 @@
             this.tabPage1.Controls.Add(this.nuBytesToRead);
             this.tabPage1.Controls.Add(this.cbReadWholeChip);
             this.tabPage1.Controls.Add(this.label10);
+            this.tabPage1.Controls.Add(this.lblReadFinalMemoryAddress);
+            this.tabPage1.Controls.Add(this.label11);
             this.tabPage1.Controls.Add(this.label9);
             this.tabPage1.Controls.Add(this.label6);
             this.tabPage1.Controls.Add(this.tbFileNameRead);
@@ -274,6 +279,7 @@
             this.nuReadStartAddress.Name = "nuReadStartAddress";
             this.nuReadStartAddress.Size = new System.Drawing.Size(120, 20);
             this.nuReadStartAddress.TabIndex = 10;
+            this.nuReadStartAddress.ValueChanged += new System.EventHandler(this.nuReadStartAddress_ValueChanged);
             // 
             // nuBytesToRead
             // 
@@ -287,6 +293,7 @@
             this.nuBytesToRead.Name = "nuBytesToRead";
             this.nuBytesToRead.Size = new System.Drawing.Size(135, 20);
             this.nuBytesToRead.TabIndex = 9;
+            this.nuBytesToRead.ValueChanged += new System.EventHandler(this.nuBytesToRead_ValueChanged);
             // 
             // cbReadWholeChip
             // 
@@ -294,7 +301,7 @@
             this.cbReadWholeChip.Checked = true;
             this.cbReadWholeChip.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbReadWholeChip.Enabled = false;
-            this.cbReadWholeChip.Location = new System.Drawing.Point(176, 122);
+            this.cbReadWholeChip.Location = new System.Drawing.Point(186, 168);
             this.cbReadWholeChip.Name = "cbReadWholeChip";
             this.cbReadWholeChip.Size = new System.Drawing.Size(124, 17);
             this.cbReadWholeChip.TabIndex = 8;
@@ -310,6 +317,24 @@
             this.label10.Size = new System.Drawing.Size(18, 13);
             this.label10.TabIndex = 7;
             this.label10.Text = "0x";
+            // 
+            // lblReadFinalMemoryAddress
+            // 
+            this.lblReadFinalMemoryAddress.AutoSize = true;
+            this.lblReadFinalMemoryAddress.Location = new System.Drawing.Point(183, 123);
+            this.lblReadFinalMemoryAddress.Name = "lblReadFinalMemoryAddress";
+            this.lblReadFinalMemoryAddress.Size = new System.Drawing.Size(16, 13);
+            this.lblReadFinalMemoryAddress.TabIndex = 7;
+            this.lblReadFinalMemoryAddress.Text = "---";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(183, 102);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(111, 13);
+            this.label11.TabIndex = 7;
+            this.label11.Text = "Final memory address:";
             // 
             // label9
             // 
@@ -335,6 +360,7 @@
             this.tbFileNameRead.Name = "tbFileNameRead";
             this.tbFileNameRead.Size = new System.Drawing.Size(324, 20);
             this.tbFileNameRead.TabIndex = 4;
+            this.tbFileNameRead.TextChanged += new System.EventHandler(this.tbFileNameRead_TextChanged);
             // 
             // btn_ChooseFolder
             // 
@@ -495,6 +521,8 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown nuBytesToRead;
         private System.Windows.Forms.NumericUpDown nuReadStartAddress;
+        private System.Windows.Forms.Label lblReadFinalMemoryAddress;
+        private System.Windows.Forms.Label label11;
     }
 }
 

@@ -22,8 +22,13 @@ namespace EpromProgrammer
          * Variable declatations
          */
         string selectedFolder = "";
-        uint startMemoryReadAddress = 0;
+
+        uint selChipMaxMemAddress = 0;
+        uint selChipMemSizeBytes = 0;
+
         uint numOfBytesToRead = 0;
+        uint readFinalAddress = 0;
+        uint readStartAddress = 0;
 
         /**
          * The constructor
@@ -68,30 +73,39 @@ namespace EpromProgrammer
         {
             if (string.Empty != cbSupportedChips.Text)
             {
-                int memSizeInKb = supportedChips[cbSupportedChips.SelectedIndex].memorySizeKb;
-                int memSizeInBytes = memSizeInKb * 1024;
-                SetControlText(lblChipMemSize, memSizeInKb + " kB (" + memSizeInBytes + " bytes)");
+                uint memSizeInKb = supportedChips[cbSupportedChips.SelectedIndex].memorySizeKb;
+
+                selChipMemSizeBytes = memSizeInKb * 1024;
+                selChipMaxMemAddress = selChipMemSizeBytes - 1;
+                readFinalAddress = selChipMaxMemAddress;
+                readStartAddress = 0;
+                numOfBytesToRead = selChipMemSizeBytes;
+
+                SetControlText(lblChipMemSize, memSizeInKb + " kB (" + selChipMemSizeBytes + " bytes)");
+                SetControlText(lblReadFinalMemoryAddress, "0x" + readFinalAddress.ToString("X"));
 
                 SetControlEnabled(cbReadWholeChip, true);
-                SetControlEnabled(btnRead, true);
+                //SetControlEnabled(btnRead, true);
                 SetControlEnabled(nuReadStartAddress, false);
                 SetControlEnabled(nuBytesToRead, false);
 
-                SetCheckBoxChecked(cbReadWholeChip, true);
-
-                SetNumericUpDownMinMax(nuBytesToRead, 1, memSizeInBytes);
-                SetNumericUpDownMinMax(nuReadStartAddress, 0, memSizeInBytes - 1);
-                SetNumericUpDownValue(nuBytesToRead, memSizeInBytes);
+                SetNumericUpDownMinMax(nuBytesToRead, 1, selChipMemSizeBytes);
+                SetNumericUpDownMinMax(nuReadStartAddress, 0, selChipMemSizeBytes - 1);
+                SetNumericUpDownValue(nuBytesToRead, selChipMemSizeBytes);
                 SetNumericUpDownValue(nuReadStartAddress, 0);
+
+                SetCheckBoxChecked(cbReadWholeChip, true);
             }
             else
             {
                 SetControlEnabled(cbReadWholeChip, false);
-                SetControlEnabled(btnRead, false);
+                //SetControlEnabled(btnRead, false);
                 SetControlEnabled(nuReadStartAddress, false);
                 SetControlEnabled(nuBytesToRead, false);
                 SetControlText(lblChipMemSize, "---");
             }
+
+            ValidateReadForm();
         }
 
         /**
@@ -206,7 +220,7 @@ namespace EpromProgrammer
                         throw result;
                     }
 
-                    uint dataSize = 131072; // Read 128 kB
+                    uint dataSize = numOfBytesToRead;
 
                     Log("Reading " + dataSize + " bytes of data...");
 
@@ -272,6 +286,8 @@ namespace EpromProgrammer
                 {
                     SetControlText(tbFolderRead, dialog.SelectedPath);
                     selectedFolder = dialog.SelectedPath;
+
+                    ValidateReadForm();
                 }
             }
         }
@@ -286,11 +302,102 @@ namespace EpromProgrammer
             if (((CheckBox)sender).Checked)
             {
                 isEnabled = false;
+                nuBytesToRead.Value = selChipMemSizeBytes;
+                nuReadStartAddress.Value = 0;
+
+                numOfBytesToRead = selChipMemSizeBytes;
+                lblReadFinalMemoryAddress.Text = "0x" + selChipMaxMemAddress.ToString("X");
+
+                readStartAddress = 0;
+                readFinalAddress = selChipMaxMemAddress;
             }
 
             nuBytesToRead.Enabled = isEnabled;
             nuReadStartAddress.Enabled = isEnabled;
         }
 
+        /**
+         * Validate read form
+         */
+        private void ValidateReadForm()
+        {
+            bool isFormValid = true;
+
+            if (string.IsNullOrEmpty(cbSupportedChips.Text))
+            {
+                isFormValid = false;
+            }
+
+            if (!serialComm.isProgrammerConnected)
+            {
+                isFormValid = false;
+            }
+
+            if (string.IsNullOrEmpty(selectedFolder))
+            {
+                isFormValid = false;
+            }
+
+            if (string.IsNullOrEmpty(tbFileNameRead.Text))
+            {
+                isFormValid = false;
+            }
+
+            SetControlEnabled(btnRead, isFormValid);
+        }
+
+        /**
+         * When num of bytes to read being changed
+         */
+        private void nuBytesToRead_ValueChanged(object sender, EventArgs e)
+        {
+            numOfBytesToRead = (uint)nuBytesToRead.Value;
+
+            if ((readStartAddress + numOfBytesToRead) > selChipMemSizeBytes)
+            {
+                uint lowestAddress = selChipMemSizeBytes - numOfBytesToRead;
+                readStartAddress = lowestAddress;
+                SetNumericUpDownValue(nuReadStartAddress, lowestAddress);
+                //nuReadStartAddress.Value = lowestAddress;
+            }
+
+            readFinalAddress = (readStartAddress + numOfBytesToRead) - 1;
+            SetControlText(lblReadFinalMemoryAddress, "0x" + readFinalAddress.ToString("X"));
+        }
+
+        /**
+         * When read start address being changed
+         */
+        private void nuReadStartAddress_ValueChanged(object sender, EventArgs e)
+        {
+            readStartAddress = (uint)nuReadStartAddress.Value;
+
+            if ((readStartAddress + numOfBytesToRead) > selChipMemSizeBytes)
+            {
+                uint maxNumOfBytesToRead = selChipMemSizeBytes - (uint)nuReadStartAddress.Value;
+                numOfBytesToRead = maxNumOfBytesToRead;
+                //nuBytesToRead.Value = maxNumOfBytesToRead;
+                SetNumericUpDownValue(nuBytesToRead, maxNumOfBytesToRead);
+            }
+
+            readFinalAddress = (readStartAddress + numOfBytesToRead) - 1;
+            SetControlText(lblReadFinalMemoryAddress, "0x" + readFinalAddress.ToString("X"));
+        }
+
+        /**
+         * Connection status label changed. - we need to validate form.
+         */  
+        private void lblConnStatus_TextChanged(object sender, EventArgs e)
+        {
+            ValidateReadForm();
+        }
+
+        /**
+         * Entered file name changed
+         */ 
+        private void tbFileNameRead_TextChanged(object sender, EventArgs e)
+        {
+            ValidateReadForm();
+        }
     }
 }

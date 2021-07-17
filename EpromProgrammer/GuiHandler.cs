@@ -40,8 +40,8 @@ namespace EpromProgrammer
             }
         }
 
-        delegate void SetNumericUpDownValueDelegate(NumericUpDown control, int value);
-        public void SetNumericUpDownValue(NumericUpDown control, int value)
+        delegate void SetNumericUpDownValueDelegate(NumericUpDown control, uint value);
+        public void SetNumericUpDownValue(NumericUpDown control, uint value)
         {
             if (control.InvokeRequired)
             {
@@ -54,8 +54,8 @@ namespace EpromProgrammer
             }
         }
 
-        delegate void SetNumericUpDownMinMaxDelegate(NumericUpDown control, int min, int max);
-        public void SetNumericUpDownMinMax(NumericUpDown control, int min, int max)
+        delegate void SetNumericUpDownMinMaxDelegate(NumericUpDown control, uint min, uint max);
+        public void SetNumericUpDownMinMax(NumericUpDown control, uint min, uint max)
         {
             if (control.InvokeRequired)
             {
