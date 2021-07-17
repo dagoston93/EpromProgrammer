@@ -28,5 +28,26 @@ namespace EpromProgrammer
             }
             
         }
+
+        delegate void DiffLogDelegate(string message, bool startNewLine);
+        public void DiffLog(string message, bool startNewLine = true)
+        {
+            if (tbBlankCheckResult.InvokeRequired)
+            {
+                DiffLogDelegate d = new DiffLogDelegate(DiffLog);
+                Invoke(d, new object[] { message, startNewLine });
+            }
+            else
+            {
+                string toAppend = message;
+                if (startNewLine)
+                {
+                    toAppend += "\r\n";
+                }
+
+                tbBlankCheckResult.AppendText(toAppend);
+            }
+
+        }
     }
 }

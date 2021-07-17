@@ -65,6 +65,13 @@
             this.lblStatusLeft = new System.Windows.Forms.ToolStripStatusLabel();
             this.pbProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.lblStatusRight = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.btnCheckBlank = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.nuBlankByte = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.tbBlankCheckResult = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -72,6 +79,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nuReadStartAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nuBytesToRead)).BeginInit();
             this.ssStatus.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nuBlankByte)).BeginInit();
             this.SuspendLayout();
             // 
             // cbSupportedChips
@@ -236,6 +245,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(9, 130);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -454,6 +464,89 @@
             this.lblStatusRight.Size = new System.Drawing.Size(291, 17);
             this.lblStatusRight.Spring = true;
             // 
+            // tabPage3
+            // 
+            this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.tbBlankCheckResult);
+            this.tabPage3.Controls.Add(this.label14);
+            this.tabPage3.Controls.Add(this.label13);
+            this.tabPage3.Controls.Add(this.nuBlankByte);
+            this.tabPage3.Controls.Add(this.label12);
+            this.tabPage3.Controls.Add(this.btnCheckBlank);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(770, 281);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Blank check";
+            // 
+            // btnCheckBlank
+            // 
+            this.btnCheckBlank.Enabled = false;
+            this.btnCheckBlank.Location = new System.Drawing.Point(20, 52);
+            this.btnCheckBlank.Name = "btnCheckBlank";
+            this.btnCheckBlank.Size = new System.Drawing.Size(75, 23);
+            this.btnCheckBlank.TabIndex = 0;
+            this.btnCheckBlank.Text = "Check";
+            this.btnCheckBlank.UseVisualStyleBackColor = true;
+            this.btnCheckBlank.Click += new System.EventHandler(this.btnCheckBlank_Click);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(7, 7);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(107, 13);
+            this.label12.TabIndex = 1;
+            this.label12.Text = "Value of erased byte:";
+            // 
+            // nuBlankByte
+            // 
+            this.nuBlankByte.Hexadecimal = true;
+            this.nuBlankByte.Location = new System.Drawing.Point(31, 26);
+            this.nuBlankByte.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.nuBlankByte.Name = "nuBlankByte";
+            this.nuBlankByte.Size = new System.Drawing.Size(62, 20);
+            this.nuBlankByte.TabIndex = 2;
+            this.nuBlankByte.Value = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(7, 28);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(18, 13);
+            this.label13.TabIndex = 3;
+            this.label13.Text = "0x";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(157, 7);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(42, 13);
+            this.label14.TabIndex = 4;
+            this.label14.Text = "Report:";
+            // 
+            // tbBlankCheckResult
+            // 
+            this.tbBlankCheckResult.BackColor = System.Drawing.Color.White;
+            this.tbBlankCheckResult.Location = new System.Drawing.Point(160, 26);
+            this.tbBlankCheckResult.Multiline = true;
+            this.tbBlankCheckResult.Name = "tbBlankCheckResult";
+            this.tbBlankCheckResult.ReadOnly = true;
+            this.tbBlankCheckResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbBlankCheckResult.Size = new System.Drawing.Size(599, 142);
+            this.tbBlankCheckResult.TabIndex = 5;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -480,6 +573,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.nuBytesToRead)).EndInit();
             this.ssStatus.ResumeLayout(false);
             this.ssStatus.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nuBlankByte)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -523,6 +619,13 @@
         private System.Windows.Forms.NumericUpDown nuReadStartAddress;
         private System.Windows.Forms.Label lblReadFinalMemoryAddress;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TextBox tbBlankCheckResult;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.NumericUpDown nuBlankByte;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button btnCheckBlank;
     }
 }
 

@@ -106,6 +106,7 @@ namespace EpromProgrammer
             }
 
             ValidateReadForm();
+            ValidateBlankCheckForm();
         }
 
         /**
@@ -347,6 +348,26 @@ namespace EpromProgrammer
         }
 
         /**
+         * Validate blank check form
+         */ 
+        private void ValidateBlankCheckForm()
+        {
+            bool isFormValid = true;
+
+            if (string.IsNullOrEmpty(cbSupportedChips.Text))
+            {
+                isFormValid = false;
+            }
+
+            if (!serialComm.isProgrammerConnected)
+            {
+                isFormValid = false;
+            }
+
+            SetControlEnabled(btnCheckBlank, isFormValid);
+        }
+
+        /**
          * When num of bytes to read being changed
          */
         private void nuBytesToRead_ValueChanged(object sender, EventArgs e)
@@ -390,6 +411,7 @@ namespace EpromProgrammer
         private void lblConnStatus_TextChanged(object sender, EventArgs e)
         {
             ValidateReadForm();
+            ValidateBlankCheckForm();
         }
 
         /**
@@ -398,6 +420,75 @@ namespace EpromProgrammer
         private void tbFileNameRead_TextChanged(object sender, EventArgs e)
         {
             ValidateReadForm();
+        }
+
+        /**
+         * Blank check button clicked
+         */ 
+        private void btnCheckBlank_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Exception result = serialComm.SerialSendReadRequest(selChipMemSizeBytes, 0);
+                ThrowIfFailed(result);
+
+                Log("Checking if chip is erased ("+ selChipMemSizeBytes +" bytes)...");
+
+                byte data = 0;
+                bool notErasedBlockStarted = false;
+                uint firstByteNotErased = 0;
+                byte erasedValue = (byte) nuBlankByte.Value;
+                uint numOfNotErasedBytes = 0;
+
+                for(uint i = 0; i < selChipMemSizeBytes; i++)
+                {
+                    result = serialComm.ReadByte(ref data);
+                    ThrowIfFailed(result);
+
+                    if(data != erasedValue)
+                    {
+                        numOfNotErasedBytes++;
+
+                        if (!notErasedBlockStarted)
+                        {
+                            notErasedBlockStarted = true;
+                            firstByteNotErased = i;
+                        }
+                    }
+                    else
+                    {
+                        if (notErasedBlockStarted)
+                        {
+                            notErasedBlockStarted = false;
+                            uint blockSize = i - firstByteNotErased;
+                            if(blockSize == 1)
+                            {
+                                DiffLog("Not erased byte found: 0x" + firstByteNotErased.ToString("X"));
+                            }
+                            else
+                            {
+                                DiffLog("Block of not erased bytes found: 0x" + firstByteNotErased.ToString("X")
+                                    + " - 0x" + i.ToString("X") + " (" + blockSize + " bytes)");
+                            }
+                            
+                        }
+                    }
+                }
+
+                if(numOfNotErasedBytes == 0)
+                {
+                    Log("Check complete. Chip is fully erased!");
+                }
+                else
+                {
+                    Log("Check complete. Total not erased bytes: " + numOfNotErasedBytes);
+                }
+                
+            }
+            catch(Exception ex)
+            {
+                Log(ex.Message);
+            }
         }
     }
 }
