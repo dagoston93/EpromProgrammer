@@ -184,19 +184,26 @@ namespace EpromProgrammer
         /**
          * Request reading from chip
          */
-        public Exception SerialSendReadRequest(uint numOfBytes)
+        public Exception SerialSendReadRequest(uint numOfBytes, uint startAddress)
         {
             Exception retVal = new ExOK();
 
             try
             { 
-                byte[] message = { READ_REQUEST, 0, 0, 0, 0 };
+                byte[] message = { READ_REQUEST, 0, 0, 0, 0, 0, 0, 0, 0 };
                 message[1] = (byte)((numOfBytes >> 24) & 0xFF);
                 message[2] = (byte)((numOfBytes >> 16) & 0xFF);
                 message[3] = (byte)((numOfBytes >>  8) & 0xFF);
                 message[4] = (byte)(numOfBytes & 0xFF);
 
-                serialPort.Write(message, 0, 5);
+                message[5] = (byte)((startAddress >> 24) & 0xFF);
+                message[6] = (byte)((startAddress >> 16) & 0xFF);
+                message[7] = (byte)((startAddress >> 8) & 0xFF);
+                message[8] = (byte)(startAddress & 0xFF);
+
+                //throw new Exception(message[5].ToString() + " " + message[5].ToString() + " " + message[5].ToString() + " " + message[5].ToString() + " " +);
+
+                serialPort.Write(message, 0, 9);
                 byte response = (byte)serialPort.ReadByte();
 
                 if(response == DATA_SIZE_ERROR)

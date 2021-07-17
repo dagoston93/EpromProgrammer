@@ -222,9 +222,9 @@ namespace EpromProgrammer
 
                     uint dataSize = numOfBytesToRead;
 
-                    Log("Reading " + dataSize + " bytes of data...");
+                    Log("Reading " + dataSize + " bytes of data from address 0x" + readStartAddress.ToString("X")  + " ...");
 
-                    result = serialComm.SerialSendReadRequest(dataSize);
+                    result = serialComm.SerialSendReadRequest(dataSize, readStartAddress);
                     ThrowIfFailed(result);
 
                     byte data = 0;
