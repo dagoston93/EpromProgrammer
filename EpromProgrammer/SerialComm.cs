@@ -15,16 +15,20 @@ namespace EpromProgrammer
         /**
          * Define the required constants
          */
-        const byte CONNECT_REQUEST = 0xDA;
+        const byte CONNECT_REQUEST    = 0xDA;
         const byte DISCONNECT_REQUEST = 0xFF;
-        const byte CONNECT_ACCEPT = 0xAD;
-        const byte READ_REQUEST = 0xAA;
-        const byte OK = 0xDD;
-        const byte DATA_SIZE_ERROR = 0x01;
+        const byte CONNECT_ACCEPT     = 0xAD;
+        const byte READ_REQUEST       = 0xAA;
+        const byte WRITE_REQUEST      = 0xBB;
+        const byte OK                 = 0xDD;
+        const byte DATA_SIZE_ERROR    = 0x01;
+        const byte INCORRECT_VCC      = 0x02;
+        const byte INCORRECT_VPP      = 0x03;
+        const byte DEVICE_FAILED      = 0x04;
 
         /**
          * Define the required objects and variables
-         */ 
+         */
         private SerialPort serialPort;
         public bool isProgrammerConnected { private set; get; } = false;
 
@@ -158,6 +162,53 @@ namespace EpromProgrammer
             return retVal;
         }
 
+        public Exception ExpectOK()
+        {
+            Exception retVal = new Exception("Something went wrong in ExpectOK()...");
+            byte data = 0;
+
+            try
+            {
+                data = (byte)serialPort.ReadByte();
+
+                if(data == OK)
+                {
+                    throw new ExOK();
+                }
+                else if (data == DEVICE_FAILED)
+                {
+                    throw new Exception("Device has failed during programming procedure!");
+                }
+                else
+                {
+                    throw new Exception("Unexpected response: 0x" + data.ToString("X"));
+                }
+            }
+            catch (Exception ex)
+            {
+                retVal = ex;
+            }
+
+            return retVal;
+        }
+
+        public Exception SendByte(byte data)
+        {
+            Exception retVal = new ExOK();
+            byte[] buffer = { data };
+
+            try
+            {
+                serialPort.Write(buffer, 0, 1);
+            }
+            catch (Exception ex)
+            {
+                retVal = ex;
+            }
+
+            return retVal;
+        }
+
         /*
         public Exception ReadByteFromProgrammer(ref byte data)
         {
@@ -180,6 +231,46 @@ namespace EpromProgrammer
 
             return retVal;
         }*/
+
+        /**
+         * Request writing to the chip
+         */
+        public Exception SerialSendWriteRequest(uint numOfBytes, uint startAddress)
+        {
+            Exception retVal = new ExOK();
+
+            try
+            {
+                byte[] message = { WRITE_REQUEST, 0, 0, 0, 0, 0, 0, 0, 0 };
+                message[1] = (byte)((numOfBytes >> 24) & 0xFF);
+                message[2] = (byte)((numOfBytes >> 16) & 0xFF);
+                message[3] = (byte)((numOfBytes >> 8) & 0xFF);
+                message[4] = (byte)(numOfBytes & 0xFF);
+
+                message[5] = (byte)((startAddress >> 24) & 0xFF);
+                message[6] = (byte)((startAddress >> 16) & 0xFF);
+                message[7] = (byte)((startAddress >> 8) & 0xFF);
+                message[8] = (byte)(startAddress & 0xFF);
+
+                serialPort.Write(message, 0, 9);
+                byte response = (byte)serialPort.ReadByte();
+
+                if (response == DATA_SIZE_ERROR)
+                {
+                    throw new Exception("The requested data size is greater than the memory of the selected chip!");
+                }
+                else if (response != OK)
+                {
+                    throw new Exception("Incorrect response from the device: " + response.ToString() + "!");
+                }
+            }
+            catch (Exception e)
+            {
+                retVal = new Exception("Error while reading from port " + serialPort.PortName + ". " + e.Message);
+            }
+
+            return retVal;
+        }
 
         /**
          * Request reading from chip
@@ -223,6 +314,16 @@ namespace EpromProgrammer
             return retVal;
         }
 
+        public void testSendByte(byte msg)
+        {
+            byte[] message = { msg };
+            serialPort.Write(message, 0, 1);
+        }
+
+        public byte testReadByte()
+        {
+            return (byte)serialPort.ReadByte();
+        }
 
         //byte[] buffer = new byte[100];
         // byte counter = 0;

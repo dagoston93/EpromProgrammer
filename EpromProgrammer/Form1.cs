@@ -21,7 +21,8 @@ namespace EpromProgrammer
         /**
          * Variable declatations
          */
-        string selectedFolder = "";
+        string readSelectedFolder = "";
+        string writeSelectedFile = "";
 
         uint selChipMaxMemAddress = 0;
         uint selChipMemSizeBytes = 0;
@@ -29,10 +30,13 @@ namespace EpromProgrammer
         uint numOfBytesToRead = 0;
         uint readFinalAddress = 0;
         uint readStartAddress = 0;
+        uint selectedFileSize = 0;
+
+        bool isSelectedFileTooLarge = false;
 
         /**
          * The constructor
-         */ 
+         */
         public Form1()
         {
             // Initialize the components
@@ -94,6 +98,9 @@ namespace EpromProgrammer
                 SetNumericUpDownValue(nuBytesToRead, selChipMemSizeBytes);
                 SetNumericUpDownValue(nuReadStartAddress, 0);
 
+                SetNumericUpDownMinMax(nuProgramStartAddress, 0, selChipMemSizeBytes - 1);
+                SetNumericUpDownValue(nuProgramStartAddress, 0);
+
                 SetCheckBoxChecked(cbReadWholeChip, true);
             }
             else
@@ -107,6 +114,7 @@ namespace EpromProgrammer
 
             ValidateReadForm();
             ValidateBlankCheckForm();
+            ValidateProgramForm();
         }
 
         /**
@@ -197,7 +205,7 @@ namespace EpromProgrammer
             {
                 using (FileManager fileManager = new FileManager())
                 {
-                    Exception result = fileManager.CreateFile(selectedFolder, tbFileNameRead.Text);
+                    Exception result = fileManager.CreateFile(readSelectedFolder, tbFileNameRead.Text);
 
                     if (result is FileAlreadyExistsException)
                     {
@@ -206,7 +214,7 @@ namespace EpromProgrammer
 
                         if (dialogResult == DialogResult.Yes)
                         {
-                            result = fileManager.CreateFile(selectedFolder, tbFileNameRead.Text, true);
+                            result = fileManager.CreateFile(readSelectedFolder, tbFileNameRead.Text, true);
                         }
                         else
                         {
@@ -276,9 +284,9 @@ namespace EpromProgrammer
         {
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
-                if (!string.IsNullOrEmpty(selectedFolder))
+                if (!string.IsNullOrEmpty(readSelectedFolder))
                 {
-                    dialog.SelectedPath = selectedFolder;
+                    dialog.SelectedPath = readSelectedFolder;
                 }
 
                 DialogResult result = dialog.ShowDialog();
@@ -286,7 +294,7 @@ namespace EpromProgrammer
                 if(result == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
                 {
                     SetControlText(tbFolderRead, dialog.SelectedPath);
-                    selectedFolder = dialog.SelectedPath;
+                    readSelectedFolder = dialog.SelectedPath;
 
                     ValidateReadForm();
                 }
@@ -334,7 +342,7 @@ namespace EpromProgrammer
                 isFormValid = false;
             }
 
-            if (string.IsNullOrEmpty(selectedFolder))
+            if (string.IsNullOrEmpty(readSelectedFolder))
             {
                 isFormValid = false;
             }
@@ -365,6 +373,65 @@ namespace EpromProgrammer
             }
 
             SetControlEnabled(btnCheckBlank, isFormValid);
+        }
+
+        /**
+         * Validate program form
+         */ 
+        private void ValidateProgramForm()
+        {
+            bool isFormValid = true;
+
+            if (string.IsNullOrEmpty(cbSupportedChips.Text))
+            {
+                isFormValid = false;
+            }
+
+            if (!serialComm.isProgrammerConnected)
+            {
+                isFormValid = false;
+            }
+
+            if (string.IsNullOrEmpty(writeSelectedFile))
+            {
+                isFormValid = false;
+            }
+
+            if(selectedFileSize == 0)
+            {
+                isFormValid = false;
+            }
+
+            // Check if file fits in ROM
+            if (selectedFileSize > selChipMemSizeBytes)
+            {
+                isFormValid = false;
+
+                SetControlText(lblFileSizeError, "Selected file is too large!");
+                SetControlEnabled(nuProgramStartAddress, false);
+                SetNumericUpDownValue(nuProgramStartAddress, 0);
+            }
+            else
+            {
+                // Calculate the max start address
+                uint lastPossibleAddress = selChipMemSizeBytes - selectedFileSize;
+
+                // If file is exactly same size as ROM, we start programming from address 0x00
+                bool nuEnabled = true;
+                if (selectedFileSize == selChipMemSizeBytes)
+                {
+                    nuEnabled = false;
+                }
+                SetControlEnabled(nuProgramStartAddress, nuEnabled);
+
+                SetNumericUpDownValue(nuProgramStartAddress, 0);
+                SetNumericUpDownMinMax(nuProgramStartAddress, 0, lastPossibleAddress);
+                SetControlText(lblProgramLastAddress, (selectedFileSize - 1).ToString("X"));
+
+                SetControlText(lblFileSizeError, "");
+            }
+
+            SetControlEnabled(btnProgram, isFormValid);
         }
 
         /**
@@ -412,6 +479,7 @@ namespace EpromProgrammer
         {
             ValidateReadForm();
             ValidateBlankCheckForm();
+            ValidateProgramForm();
         }
 
         /**
@@ -423,8 +491,113 @@ namespace EpromProgrammer
         }
 
         /**
+         * Program button click
+         */
+        private void btnProgram_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Prompt user to setup correctly
+                DialogResult dialogRes = MessageBox.Show(
+                    "1. Set voltage on PSU to +13V.\r\n" +
+                    "2. Check the voltage.\r\n" +
+                    "3. Connect PSU to programming shield.\r\n" +
+                    "4. Insert IC to socket.\r\n" +
+                    "5. Flip switches on shiled to Programming mode.", 
+                    "Actions required", 
+                    MessageBoxButtons.OKCancel, 
+                    MessageBoxIcon.Information
+                );
+
+                if(dialogRes != DialogResult.OK)
+                {
+                    throw new Exception("Programming has been cancelled by user.");
+                }
+
+                Exception result = serialComm.SerialSendWriteRequest(selectedFileSize, (uint)nuProgramStartAddress.Value);
+                ThrowIfFailed(result);
+
+                Log("Programming in progress...");
+
+                // Send file -> Programming
+                result = SendFileToProgrammer();
+                ThrowIfFailed(result);
+
+                result = serialComm.ExpectOK();
+                ThrowIfFailed(result);
+
+                // Send file again -> Checking with VPP = 13 V
+                result = SendFileToProgrammer();
+                ThrowIfFailed(result);
+
+                result = serialComm.ExpectOK();
+                ThrowIfFailed(result);
+
+                // Prompt user to set 5V
+                dialogRes = MessageBox.Show(
+                    "Set both switches on the shield to normal.",
+                    "Set switches to normal.",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Information
+                );
+
+                if (dialogRes != DialogResult.OK)
+                {
+                    throw new Exception("Final check has been cancelled by user.");
+                }
+
+                // Send file last time -> Checking with VPP = 5V
+                result = SendFileToProgrammer();
+                ThrowIfFailed(result);
+
+                result = serialComm.ExpectOK();
+                ThrowIfFailed(result);
+
+                Log("Programming finished.");
+
+            }
+            catch (Exception ex)
+            {
+                Log(ex.Message);
+            }
+        }
+
+        /**
+         * Sends the file to the chip
+         */
+        private Exception SendFileToProgrammer()
+        {
+            Exception retVal = new ExOK();
+            FileStream fs = null;
+
+            try
+            {
+                fs = new FileStream(writeSelectedFile, FileMode.Open);
+
+                for(uint i = 0; i < selectedFileSize; i++)
+                {
+                    byte data = (byte) fs.ReadByte();
+                    serialComm.SendByte(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                retVal = ex;
+            }
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Close();
+                }
+            }
+
+            return retVal;
+        }
+
+        /**
          * Blank check button clicked
-         */ 
+         */
         private void btnCheckBlank_Click(object sender, EventArgs e)
         {
             try
@@ -490,5 +663,78 @@ namespace EpromProgrammer
                 Log(ex.Message);
             }
         }
+
+
+        /**
+         * Test page control event handlers
+         */ 
+        private void btnTestSend_Click(object sender, EventArgs e)
+        {
+            serialComm.testSendByte((byte)nuTestSend.Value);
+        }
+
+        private void btnTestRead_Click(object sender, EventArgs e)
+        {
+            tbTestReadVal.Text += "  0x" + serialComm.testReadByte().ToString("X");
+        }
+
+        private void btnTestClear_Click(object sender, EventArgs e)
+        {
+            tbTestReadVal.Text = "";
+        }
+
+        private void btnTestNewLine_Click(object sender, EventArgs e)
+        {
+            tbTestReadVal.Text += "\r\n";
+        }
+
+        /**
+         * Program -> File select button onClick()
+         */ 
+        private void btnBrowseFile_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                string initDir;
+                if(writeSelectedFile != "")
+                {
+                    initDir = writeSelectedFile;
+                }
+                else
+                {
+                    initDir = "c:\\";
+                }
+                
+                openFileDialog.InitialDirectory = initDir;
+                openFileDialog.Filter = "All files (*.*)|*.*";
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    writeSelectedFile = openFileDialog.FileName;
+                    SetControlText(tbFileName, writeSelectedFile);
+
+                    // Get the file size
+                    FileInfo info = new FileInfo(writeSelectedFile);
+                    selectedFileSize = (uint) info.Length;
+                    string lengthStr = selectedFileSize.ToString() + " bytes";
+                    SetControlText(lblFileSize, lengthStr);
+
+                    ValidateProgramForm();
+                }
+            }
+        }
+
+        /**
+         * ProgramStartAddress numeric up/down value changed
+         */
+        private void nuProgramStartAddress_ValueChanged(object sender, EventArgs e)
+        {
+            uint finalAddress = (uint) nuProgramStartAddress.Value + selectedFileSize - 1;
+            SetControlText(lblProgramLastAddress, finalAddress.ToString("X"));
+        }
+
+        
     }
 }
